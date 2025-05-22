@@ -10,7 +10,7 @@ Testing for Credentials Transported over an Encrypted Channel (WSTG-AUTH-01) inv
 - Exposure of sensitive data through mixed content or HTTP fallback.
 - Non-compliance with security standards (e.g., PCI DSS, GDPR).
 
-This guide provides a practical, hands-on methodology for testing secure credential transport, adhering to OWASP’s WSTG-AUTH-01, with detailed tool setups, specific commands integrated into test steps, remediation strategies, and ethical considerations for professional penetration testing. **Ethical Note**: Obtain explicit permission for testing, as intercepting traffic or forcing HTTP may trigger security alerts or disrupt live systems.
+This guide provides a practical, hands-on methodology for testing secure credential transport, adhering to OWASP’s WSTG-AUTH-01, with detailed tool setups, remediation strategies, and ethical considerations for professional penetration testing. **Ethical Note**: Obtain explicit permission for testing, as intercepting traffic or forcing HTTP may trigger security alerts or disrupt live systems.
 
 ## Testing Tools
 
@@ -45,27 +45,22 @@ This methodology follows OWASP’s black-box approach for WSTG-AUTH-01, focusing
 **Objective**: Verify that login requests use HTTPS and reject HTTP attempts.
 
 **Steps**:
-1. **Configure Burp Suite**:
-   - Set up browser proxy (127.0.0.1:8080).
-   - Add `example.com/login` to the target scope in the “Target” tab.
-2. **Capture Login Request**:
-   - Load the login page (e.g., `https://example.com/login`) and submit valid credentials.
-   - Check “HTTP History” for the POST request to `/login`.
-3. **Force HTTP**:
-   - Modify the request URL to `http://example.com/login` in Burp Repeater.
-   - Resend and check if the server redirects to HTTPS or rejects the request.
-4. **Analyze Responses**:
-   - Expected secure response: HTTP 301/302 redirect to HTTPS or request failure.
+1. Configure Burp Suite by setting up the browser proxy (127.0.0.1:8080) and adding `example.com/login` to the target scope in the “Target” tab.
+2. Load the login page (e.g., `https://example.com/login`), submit valid credentials, and verify the POST request in “HTTP History” uses HTTPS:
+   ```
+   HTTP History -> Select POST /login -> Verify Request URL starts with https://
+   ```
+3. In Burp Repeater, modify the request URL to `http://example.com/login` and resend to check if the server redirects to HTTPS or rejects the request:
+   ```
+   Repeater -> Change https://example.com/login to http://example.com/login -> Click Send -> Check for redirect or rejection
+   ```
+4. Analyze responses; expected secure response is an HTTP 301/302 redirect to HTTPS or request failure.
 
-**Burp Suite Commands**:
-- **Command 1**: Capture login request:
-  ```
-  HTTP History -> Select POST /login -> Verify Request URL starts with https://
-  ```
-- **Command 2**: Test HTTP fallback:
-  ```
-  Repeater -> Change https://example.com/login to http://example.com/login -> Click Send -> Check for redirect or rejection
-  ```
+**Example Secure Response**:
+```
+HTTP/1.1 301 Moved Permanently
+Location: https://example.com/login
+```
 
 **Example Vulnerable Response**:
 ```
@@ -90,24 +85,22 @@ Content-Type: application/json
 **Objective**: Ensure account creation requests use HTTPS and reject HTTP.
 
 **Steps**:
-1. **Identify Account Creation Endpoint**:
-   - Use Burp Suite to find `POST /register` or `/createAccount`.
-2. **Test HTTPS Submission**:
-   - Send a valid account creation request over HTTPS.
-3. **Test HTTP Submission**:
-   - Attempt the same request over HTTP and check for rejection or redirect.
-4. **Analyze Responses**:
-   - Expected secure response: HTTP 301/302 redirect to HTTPS or request failure.
+1. Use Burp Suite to identify the account creation endpoint (e.g., `POST /register` or `/createAccount`).
+2. Send a valid account creation request over HTTPS to confirm functionality:
+   ```bash
+   curl -i -X POST -d "username=user456&password=Secure123" https://example.com/register
+   ```
+3. Attempt the same request over HTTP to check for rejection or redirect:
+   ```bash
+   curl -i -X POST -d "username=user456&password=Secure123" http://example.com/register
+   ```
+4. Analyze responses; expected secure response is an HTTP 301/302 redirect to HTTPS or request failure.
 
-**cURL Commands**:
-- **Command 1**: Test HTTPS account creation:
-  ```bash
-  curl -i -X POST -d "username=user456&password=Secure123" https://example.com/register
-  ```
-- **Command 2**: Test HTTP account creation:
-  ```bash
-  curl -i -X POST -d "username=user456&password=Secure123" http://example.com/register
-  ```
+**Example Secure Response**:
+```
+HTTP/1.1 301 Moved Permanently
+Location: https://example.com/register
+```
 
 **Example Vulnerable Response**:
 ```
@@ -132,27 +125,22 @@ Content-Type: application/json
 **Objective**: Verify that password reset or change requests use HTTPS.
 
 **Steps**:
-1. **Configure OWASP ZAP**:
-   - Set up browser proxy (127.0.0.1:8080).
-   - Enable “Break” to intercept requests.
-2. **Capture Password Reset Request**:
-   - Trigger a password reset or change (e.g., `POST /reset-password`).
-   - Inspect the request in ZAP’s “History” tab.
-3. **Force HTTP**:
-   - Modify the request URL to HTTP in ZAP’s “Manual Request Editor”.
-   - Resend and check for redirect or rejection.
-4. **Analyze Responses**:
-   - Expected secure response: HTTP 301/302 redirect to HTTPS or request failure.
+1. Configure OWASP ZAP by setting up the browser proxy (127.0.0.1:8080) and enabling “Break” to intercept requests.
+2. Trigger a password reset or change (e.g., `POST /reset-password`) and verify the request in ZAP’s “History” tab uses HTTPS:
+   ```
+   History tab -> Select POST /reset-password -> Verify Request URL starts with https://
+   ```
+3. In ZAP’s “Manual Request Editor”, modify the request URL to HTTP and resend to check for redirect or rejection:
+   ```
+   Manual Request Editor -> Change https://example.com/reset-password to http://example.com/reset-password -> Send -> Check for redirect or rejection
+   ```
+4. Analyze responses; expected secure response is an HTTP 301/302 redirect to HTTPS or request failure.
 
-**OWASP ZAP Commands**:
-- **Command 1**: Capture password reset request:
-  ```
-  History tab -> Select POST /reset-password -> Verify Request URL starts with https://
-  ```
-- **Command 2**: Test HTTP fallback:
-  ```
-  Manual Request Editor -> Change https://example.com/reset-password to http://example.com/reset-password -> Send -> Check for redirect or rejection
-  ```
+**Example Secure Response**:
+```
+HTTP/1.1 301 Moved Permanently
+Location: https://example.com/reset-password
+```
 
 **Example Vulnerable Response**:
 ```
@@ -178,25 +166,23 @@ Content-Type: application/json
 **Objective**: Ensure session tokens are transmitted only over HTTPS with Secure/HttpOnly attributes.
 
 **Steps**:
-1. **Log In**:
-   - Log in to the application and open Browser Developer Tools (Network tab).
-2. **Inspect Session Cookies**:
-   - Check for cookies (e.g., `JSESSIONID`) in the request headers.
-   - Verify `Secure` and `HttpOnly` attributes in the “Application” tab.
-3. **Force HTTP Navigation**:
-   - Navigate to `http://example.com/` and check if cookies are sent.
-4. **Analyze Responses**:
-   - Expected secure response: Cookies not sent over HTTP; HTTPS required.
+1. Log in to the application and open Browser Developer Tools (Network tab).
+2. Check for cookies (e.g., `JSESSIONID`) and verify `Secure` and `HttpOnly` attributes in the “Application” tab:
+   ```
+   Application tab -> Cookies -> Select https://example.com -> Verify JSESSIONID has Secure and HttpOnly
+   ```
+3. Navigate to `http://example.com/` and check if cookies are sent over HTTP:
+   ```
+   Network tab -> Load http://example.com/ -> Check Request Headers for Cookie presence
+   ```
+4. Analyze responses; expected secure response is that cookies are not sent over HTTP and HTTPS is required.
 
-**Browser Developer Tools Commands**:
-- **Command 1**: Inspect session cookies:
-  ```
-  Application tab -> Cookies -> Select https://example.com -> Verify JSESSIONID has Secure and HttpOnly
-  ```
-- **Command 2**: Test HTTP cookie transmission:
-  ```
-  Network tab -> Load http://example.com/ -> Check Request Headers for Cookie presence
-  ```
+**Example Secure Response**:
+```
+HTTP/1.1 301 Moved Permanently
+Location: https://example.com/
+[No Cookie header in request]
+```
 
 **Example Vulnerable Response**:
 ```
@@ -222,24 +208,22 @@ Request Headers:
 **Objective**: Verify that the application enforces HSTS to prevent HTTP fallback.
 
 **Steps**:
-1. **Send Request**:
-   - Request the application’s root or subdomain (e.g., `https://example.com`).
-2. **Inspect Headers**:
-   - Check for `Strict-Transport-Security` with `max-age` and `includeSubDomains`.
-3. **Test Subdomains**:
-   - Repeat for subdomains (e.g., `https://sub.example.com`).
-4. **Analyze Responses**:
-   - Expected secure response: HSTS header with `max-age>=31536000` and `includeSubDomains`.
+1. Send a request to the application’s root (e.g., `https://example.com`) and inspect response headers for `Strict-Transport-Security`:
+   ```bash
+   curl -I https://example.com
+   ```
+2. Repeat for a subdomain (e.g., `https://sub.example.com`) to verify `includeSubDomains`:
+   ```bash
+   curl -I https://sub.example.com
+   ```
+3. Check for `max-age` (e.g., 31536000 for 1 year) and `includeSubDomains`.
+4. Analyze responses; expected secure response is an HSTS header with `max-age>=31536000` and `includeSubDomains`.
 
-**cURL Commands**:
-- **Command 1**: Check HSTS on root domain:
-  ```bash
-  curl -I https://example.com
-  ```
-- **Command 2**: Check HSTS on subdomain:
-  ```bash
-  curl -I https://sub.example.com
-  ```
+**Example Secure Response**:
+```
+HTTP/1.1 200 OK
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+```
 
 **Example Vulnerable Response**:
 ```
@@ -263,24 +247,22 @@ HTTP/1.1 200 OK
 **Objective**: Ensure all resources on authentication pages are loaded over HTTPS.
 
 **Steps**:
-1. **Load Authentication Page**:
-   - Access the login page (e.g., `https://example.com/login`) and open Developer Tools (Network tab).
-2. **Inspect Resources**:
-   - Filter for HTTP-loaded resources (e.g., scripts, images).
-3. **Check Console**:
-   - Look for “Mixed Content” warnings in the Console tab.
-4. **Analyze Findings**:
-   - Expected secure response: No HTTP resources or mixed content warnings.
+1. Access the login page (e.g., `https://example.com/login`) and open Developer Tools (Network tab).
+2. Filter for HTTP-loaded resources (e.g., scripts, images):
+   ```
+   Network tab -> Load https://example.com/login -> Filter for http:// resources
+   ```
+3. Check the Console tab for “Mixed Content” warnings:
+   ```
+   Console tab -> Load https://example.com/login -> Look for "Mixed Content" warnings
+   ```
+4. Analyze findings; expected secure response is no HTTP resources or mixed content warnings.
 
-**Browser Developer Tools Commands**:
-- **Command 1**: Check for HTTP resources:
-  ```
-  Network tab -> Load https://example.com/login -> Filter for http:// resources
-  ```
-- **Command 2**: Check for mixed content warnings:
-  ```
-  Console tab -> Load https://example.com/login -> Look for "Mixed Content" warnings
-  ```
+**Example Secure Output**:
+```
+[No Mixed Content warnings in Console tab]
+[All resources in Network tab use https://]
+```
 
 **Example Vulnerable Output**:
 ```
