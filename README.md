@@ -6,23 +6,23 @@ This resource is built upon the **OWASP Web Security Testing Guide (WSTG)** meth
 
 ---
 
-
 ## 🧠 Why This Repo?
 
 Starting out in web app testing can be overwhelming — especially with scattered resources and unclear testing sequences. This repository bridges that gap by providing:
 
-- A structured, OWASP-aligned roadmap
-- Actionable testing steps and examples
-- Personal notes from real testing experiences
-- A growing knowledge base you can fork and contribute to
+- A structured, OWASP-aligned roadmap  
+- Actionable testing steps and examples  
+- Personal notes from real testing experiences  
+- A growing knowledge base you can reference and expand  
 
 Whether you're prepping for certifications like **CEH**, **OSCP**, **eJPT**, or diving into **bug bounty** programs — these guides are made to accelerate your learning.
 
 ---
 
-## 🤝 Contributing
+## ⚠️ Responsible Usage Notice
 
-Contributions, suggestions, and issue reports are welcome! Feel free to fork the repo and submit a pull request to add new test cases, update techniques, or suggest improvements.
+These guides are intended for use **only in authorized, legal, and controlled environments** such as personal labs or explicitly permitted test systems.  
+Improper or unauthorized use of these testing techniques can have serious legal and ethical consequences. Please see [`SECURITY.md`](./SECURITY.md) for detailed responsible usage guidelines.
 
 ---
 
@@ -32,8 +32,12 @@ This project is licensed under the **MIT License**. See [`LICENSE`](./LICENSE) f
 
 ---
 
-## 📬 Stay Connected
+## 📬 About the Author
 
-Follow the project, star the repo, and connect on [GitHub](https://github.com/your-username) to stay up-to-date with new additions.
+This repository and its resources are created and maintained by Bhart Verma, a passionate Cybersecurity Analyst dedicated to building practical learning projects and sharing knowledge.
 
-Happy testing! 🚀
+Check out my portfolio for more about my skills and projects: [https://CyberBhart.github.io/portfolio/](https://CyberBhart.github.io/portfolio/)
+
+---
+
+*Happy testing and keep learning! 🚀*
